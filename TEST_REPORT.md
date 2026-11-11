@@ -1,18 +1,18 @@
 # TEST_REPORT — v0.1.0
 
-Date: 2026-11-11 (to be filled with the green CI run that ships the tag).
+Date: 2026-11-11
 
 ## Automated
 
 | Check | Result | Notes |
 | --- | --- | --- |
-| ruff check / format | pending CI | |
-| mypy strict | pending CI | |
-| pytest + coverage | pending CI | floor 85% (`fail_under`) |
-| `python -m build` | pending CI | |
-| CodeQL | pending CI | |
+| ruff check / format | pass (local) | also expected green on CI |
+| mypy strict | pass (local) | 17 source files |
+| pytest + coverage | pass (local) | 45 passed, 94.13% (floor 85%) |
+| `python -m build` | pending CI | CI job on main / PR |
+| CodeQL | pending CI | workflow on main / PR |
 
-Re-run locally after install:
+Local re-run:
 
 ```bash
 pip install -e ".[dev]"

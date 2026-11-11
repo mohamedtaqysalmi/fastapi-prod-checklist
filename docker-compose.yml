@@ -1,0 +1,26 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      APP_ENVIRONMENT: local
+      APP_DATABASE_URL: sqlite+aiosqlite:////tmp/app.db
+      APP_DATABASE_READY_CHECK: "true"
+      APP_RATE_LIMIT_REQUESTS: "120"
+    volumes:
+      - app-data:/tmp
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz')",
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  app-data:

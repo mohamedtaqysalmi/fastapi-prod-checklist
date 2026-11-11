@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "fastapi-prod-checklist"
-version = "0.0.1"
+version = "0.1.0"
 description = "FastAPI template where production readiness is enforced by tests, not by a README promise."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -23,6 +23,10 @@ dependencies = [
     "fastapi>=0.115",
     "pydantic-settings>=2.6",
     "uvicorn>=0.32",
+    "sqlalchemy[asyncio]>=2.0",
+    "aiosqlite>=0.20",
+    "alembic>=1.14",
+    "sentry-sdk[fastapi]>=2.0",
 ]
 
 [project.optional-dependencies]
@@ -30,10 +34,11 @@ dev = [
     "ruff",
     "mypy",
     "pytest",
+    "pytest-asyncio",
     "pytest-cov",
     "pre-commit",
     "build",
-    "httpx2",
+    "httpx",
 ]
 
 [project.urls]
@@ -53,14 +58,28 @@ select = ["E", "F", "W", "I", "B", "UP", "SIM", "C4", "RUF", "S"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101", "S105"]
+"alembic/**" = ["S101"]
 
 [tool.mypy]
 strict = true
 python_version = "3.11"
 files = ["src", "tests"]
 
+[[tool.mypy.overrides]]
+module = [
+    "alembic",
+    "alembic.*",
+    "sentry_sdk",
+    "sentry_sdk.*",
+    "sqlalchemy",
+    "sqlalchemy.*",
+]
+ignore_missing_imports = true
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 addopts = "-ra --strict-markers --cov=app --cov-report=term-missing"
 
 [tool.coverage.run]

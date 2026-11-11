@@ -1,13 +1,15 @@
 import os
-from collections.abc import Callable
+from collections.abc import AsyncIterator, Callable
 
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from app.config import Settings
+from app.db import dispose_engine
 from app.health import ReadinessCheck
 from app.main import create_app
+from app.sentry import reset_sentry_state_for_tests
 
 AppFactory = Callable[..., FastAPI]
 
@@ -18,10 +20,21 @@ def _clean_environment(monkeypatch: pytest.MonkeyPatch) -> None:
     for name in list(os.environ):
         if name.startswith("APP_"):
             monkeypatch.delenv(name)
+    reset_sentry_state_for_tests()
+
+
+@pytest.fixture(autouse=True)
+async def _reset_database() -> AsyncIterator[None]:
+    yield
+    await dispose_engine()
 
 
 def make_settings(**overrides: object) -> Settings:
-    values: dict[str, object] = {"environment": "production"}
+    values: dict[str, object] = {
+        "environment": "production",
+        # Keep suite runs under the limiter unless a test opts in.
+        "rate_limit_enabled": False,
+    }
     values.update(overrides)
     return Settings(_env_file=None, **values)  # type: ignore[call-arg, arg-type]
 

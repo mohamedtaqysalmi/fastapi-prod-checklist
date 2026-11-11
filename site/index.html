@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>fastapi-prod-checklist — production readiness enforced by tests</title>
+    <meta
+      name="description"
+      content="A FastAPI template where each production requirement has a test that fails if you remove it. Expand the checklist to see why and how to verify."
+    />
+    <meta property="og:title" content="fastapi-prod-checklist" />
+    <meta
+      property="og:description"
+      content="Production readiness enforced by tests, not by a README promise."
+    />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:url"
+      content="https://mohamedtaqysalmi.github.io/fastapi-prod-checklist/"
+    />
+    <meta
+      property="og:image"
+      content="https://mohamedtaqysalmi.github.io/fastapi-prod-checklist/og.svg"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="fastapi-prod-checklist" />
+    <meta
+      name="twitter:description"
+      content="Production readiness enforced by tests, not by a README promise."
+    />
+    <meta
+      name="twitter:image"
+      content="https://mohamedtaqysalmi.github.io/fastapi-prod-checklist/og.svg"
+    />
+    <meta name="theme-color" content="#0a7a7a" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&family=Literata:opsz,wght@7..72,600;7..72,700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#checklist">Skip to checklist</a>
+
+    <header class="topbar">
+      <div class="wrap topbar-inner">
+        <a class="brand" href="./" aria-label="fastapi-prod-checklist home">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>fastapi-prod-checklist</span>
+        </a>
+        <nav aria-label="Primary">
+          <a href="https://github.com/mohamedtaqysalmi/fastapi-prod-checklist">GitHub</a>
+          <a href="https://github.com/mohamedtaqysalmi">Profile</a>
+          <a href="https://www.linkedin.com/in/mohamedtaqysalmi">LinkedIn</a>
+        </nav>
+        <button type="button" class="theme-toggle" id="theme-toggle" aria-pressed="false">
+          Dark
+        </button>
+      </div>
+    </header>
+
+    <section class="hero" aria-label="Introduction">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">FastAPI template · test-backed checklist</p>
+          <h1>fastapi-prod-checklist</h1>
+          <p class="lede">
+            I got tired of READMEs that claim an API is production-ready. Here every requirement
+            has a test that goes red if you delete the feature.
+          </p>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="#checklist">Open the checklist</a>
+            <a
+              class="btn btn-ghost"
+              href="https://github.com/mohamedtaqysalmi/fastapi-prod-checklist"
+              >Clone the repo</a
+            >
+          </div>
+        </div>
+        <aside class="hero-panel" aria-label="Live status strip">
+          <div class="status-row">
+            <span class="dot" aria-hidden="true"></span>
+            <code>tests/test_production_readiness.py</code>
+          </div>
+          <p>
+            One assertion family per requirement: health, readiness, config, request IDs, CORS,
+            headers, errors, rate limits, Sentry opt-in, Alembic, non-root Docker, graceful
+            shutdown.
+          </p>
+          <pre class="snippet" tabindex="0"><code>pytest tests/test_production_readiness.py -q
+# remove /healthz → test_health_endpoint_reports_liveness fails</code></pre>
+        </aside>
+      </div>
+      <div class="hero-rule" aria-hidden="true"></div>
+    </section>
+
+    <main>
+      <section class="wrap section" id="checklist" aria-labelledby="checklist-title">
+        <div class="section-head">
+          <h2 id="checklist-title">Interactive checklist</h2>
+          <p>
+            Expand an item for why it exists and how to verify it. Filter by category; progress is
+            stored in this browser only.
+          </p>
+          <div class="toolbar">
+            <label class="sr-only" for="filter">Filter checklist</label>
+            <select id="filter">
+              <option value="all">All items</option>
+              <option value="runtime">Runtime</option>
+              <option value="security">Security</option>
+              <option value="ops">Ops / deploy</option>
+              <option value="observability">Observability</option>
+            </select>
+            <button type="button" id="expand-all" class="text-btn">Expand all</button>
+            <button type="button" id="collapse-all" class="text-btn">Collapse all</button>
+            <span class="progress" id="progress" aria-live="polite">0 / 0 checked</span>
+          </div>
+        </div>
+        <div id="checklist-root" class="checklist"></div>
+      </section>
+
+      <section class="wrap section" aria-labelledby="quickstart-title">
+        <h2 id="quickstart-title">Quickstart</h2>
+        <p class="lede narrow">
+          From a clean clone. Copy the block, then hit the button if you want it on the clipboard.
+        </p>
+        <div class="code-block">
+          <pre id="quickstart-code"><code>cp .env.example .env
+python -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"
+uvicorn app.main:create_app --factory --no-access-log
+# or: docker compose up --build</code></pre>
+          <button type="button" class="copy-btn" data-copy="quickstart-code">Copy</button>
+        </div>
+      </section>
+
+      <section class="wrap section" aria-labelledby="how-title">
+        <h2 id="how-title">How it works</h2>
+        <figure class="diagram">
+          <svg viewBox="0 0 720 220" role="img" aria-labelledby="arch-title arch-desc">
+            <title id="arch-title">Request path through the template</title>
+            <desc id="arch-desc">
+              Client traffic passes rate limit, security headers, request context and CORS before
+              routes. Lifespan owns Sentry opt-in and database disposal on shutdown.
+            </desc>
+            <rect class="d-bg" x="0" y="0" width="720" height="220" rx="0" />
+            <g class="d-box" transform="translate(24,70)">
+              <rect width="100" height="56" rx="4" />
+              <text x="50" y="34" text-anchor="middle">Client</text>
+            </g>
+            <path class="d-arrow" d="M132 98 H168" />
+            <g class="d-box" transform="translate(172,70)">
+              <rect width="110" height="56" rx="4" />
+              <text x="55" y="34" text-anchor="middle">Rate limit</text>
+            </g>
+            <path class="d-arrow" d="M290 98 H326" />
+            <g class="d-box" transform="translate(330,70)">
+              <rect width="120" height="56" rx="4" />
+              <text x="60" y="34" text-anchor="middle">Headers + ID</text>
+            </g>
+            <path class="d-arrow" d="M458 98 H494" />
+            <g class="d-box accent" transform="translate(498,70)">
+              <rect width="100" height="56" rx="4" />
+              <text x="50" y="34" text-anchor="middle">Routes</text>
+            </g>
+            <path class="d-arrow" d="M606 98 H642" />
+            <g class="d-box" transform="translate(646,70)">
+              <rect width="50" height="56" rx="4" />
+              <text x="25" y="34" text-anchor="middle">…</text>
+            </g>
+            <text class="d-note" x="360" y="190" text-anchor="middle">
+              Lifespan: Sentry off-by-default · Alembic beside the app · non-root image
+            </text>
+          </svg>
+        </figure>
+      </section>
+
+      <section class="wrap section two-col" aria-labelledby="limits-title">
+        <div>
+          <h2 id="limits-title">Honest limits</h2>
+          <ul class="plain-list">
+            <li>Rate limiting is in-process; multi-worker needs a shared store.</li>
+            <li>500 responses currently miss CORS headers (Starlette layering).</li>
+            <li>Redaction is key-name based; free-text secrets can still leak into logs.</li>
+            <li>OpenAPI UI is off because CSP is strict on purpose.</li>
+          </ul>
+        </div>
+        <div>
+          <h2 id="built-title">How I built it</h2>
+          <ul class="plain-list">
+            <li>Readiness tests assert HTTP behaviour, not private function names.</li>
+            <li>Dockerfile USER is asserted by reading the file in CI.</li>
+            <li>Sentry only loads when <code>APP_SENTRY_DSN</code> is set.</li>
+            <li>Alembic ships with a real <code>upgrade head</code> against SQLite in tests.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="wrap section" aria-labelledby="roadmap-title">
+        <h2 id="roadmap-title">Roadmap</h2>
+        <p>
+          Tracked as GitHub issues under milestone
+          <a href="https://github.com/mohamedtaqysalmi/fastapi-prod-checklist/milestones"
+            >v0.2.0</a
+          >. Next up: shared-store rate limiting, CORS on 500s, and richer readiness probes.
+        </p>
+        <p class="badges">
+          <img
+            alt="CI status"
+            src="https://github.com/mohamedtaqysalmi/fastapi-prod-checklist/actions/workflows/ci.yml/badge.svg"
+          />
+          <img
+            alt="CodeQL"
+            src="https://github.com/mohamedtaqysalmi/fastapi-prod-checklist/actions/workflows/codeql.yml/badge.svg"
+          />
+        </p>
+      </section>
+    </main>
+
+    <footer class="wrap footer">
+      <p>
+        Built by
+        <a href="https://github.com/mohamedtaqysalmi">Mohamed-Taqy Salmi</a>
+        · MIT ·
+        <a href="https://github.com/mohamedtaqysalmi/fastapi-prod-checklist">Source</a>
+      </p>
+    </footer>
+
+    <script src="checklist-data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -19,3 +19,5 @@ coverage.xml
 .vscode/
 .DS_Store
 Thumbs.db
+*.db
+app.db

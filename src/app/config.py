@@ -25,6 +25,22 @@ class Settings(BaseSettings):
 
     readiness_timeout_seconds: float = Field(default=2.0, gt=0)
 
+    # Rate limiting is on by default so a missing middleware fails the readiness suite.
+    rate_limit_enabled: bool = True
+    rate_limit_requests: int = Field(default=60, ge=1)
+    rate_limit_window_seconds: float = Field(default=60.0, gt=0)
+
+    # Empty DSN means Sentry stays off. Never required for boot.
+    sentry_dsn: str = ""
+    sentry_traces_sample_rate: float = Field(default=0.0, ge=0.0, le=1.0)
+
+    # Empty means no SQLAlchemy engine is created. Alembic still ships with the template.
+    database_url: str = ""
+    database_ready_check: bool = False
+
+    # How long shutdown waits for in-flight requests before disposing resources.
+    shutdown_grace_seconds: float = Field(default=5.0, ge=0)
+
     @field_validator("cors_allow_origins", "cors_allow_methods", mode="before")
     @classmethod
     def _split_list(cls, value: object) -> object:

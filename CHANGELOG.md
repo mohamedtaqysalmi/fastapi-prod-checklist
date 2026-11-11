@@ -10,3 +10,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Project scaffold: packaging, lint, type-check and test configuration.
+- Community files, issue and PR templates, Dependabot config.
+- CI workflow (ruff, mypy, pytest with coverage, build on Python 3.11 and 3.14) and CodeQL analysis.

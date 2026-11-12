@@ -1,0 +1,61 @@
+/* fastapi-prod-checklist: layout rules for the checklist only. Everything else is base.css. */
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+}
+.toolbar .progress {
+  margin: 0 0 0 auto;
+  font-family: var(--mono);
+  font-size: var(--step--1);
+  color: var(--muted);
+}
+
+.checklist {
+  list-style: none;
+  padding: 0;
+  margin-top: 1rem;
+  border: 1px solid var(--line);
+}
+.check-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: start;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--line-soft);
+  margin: 0;
+}
+.check-item:last-child {
+  border-bottom: 0;
+}
+.check-item input[type="checkbox"] {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-top: 0.25rem;
+}
+.check-item summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.check-item summary .meta {
+  display: block;
+  margin-top: 0.15rem;
+  font-family: var(--mono);
+  font-size: var(--step--1);
+  font-weight: 400;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.check-item .detail {
+  margin-top: 0.75rem;
+}
+.check-item .detail h3 {
+  font-size: var(--step--1);
+  margin-bottom: 0.2rem;
+}
+.check-item .detail p {
+  margin: 0 0 0.75rem;
+}

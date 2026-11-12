@@ -1,13 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="fastapi-prod-checklist">
-  <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0b1f1c"/>
-      <stop offset="100%" stop-color="#12352e"/>
-    </linearGradient>
-  </defs>
-  <rect width="1200" height="630" fill="url(#g)"/>
-  <rect x="0" y="560" width="1200" height="12" fill="#5dcea8"/>
-  <text x="72" y="210" fill="#e8efe9" font-family="Georgia, serif" font-size="72" font-weight="700">fastapi-prod-checklist</text>
-  <text x="72" y="290" fill="#9bb0a8" font-family="Segoe UI, sans-serif" font-size="36">Production readiness enforced by tests</text>
-  <text x="72" y="390" fill="#5dcea8" font-family="Consolas, monospace" font-size="28">tests/test_production_readiness.py</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="fastapi-prod-checklist: production readiness enforced by tests">
+  <rect width="1200" height="630" fill="#ffffff"/>
+  <text x="72" y="190" fill="#202122" font-family="Georgia, Times New Roman, serif" font-size="72">fastapi-prod-checklist</text>
+  <rect x="72" y="214" width="1056" height="2" fill="#a2a9b1"/>
+  <text x="72" y="290" fill="#54595d" font-family="Georgia, Times New Roman, serif" font-size="36">Production readiness enforced by tests</text>
+  <text x="72" y="540" fill="#0645ad" font-family="Consolas, Menlo, monospace" font-size="28">tests/test_production_readiness.py</text>
 </svg>

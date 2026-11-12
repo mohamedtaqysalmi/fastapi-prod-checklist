@@ -214,9 +214,8 @@ def test_rate_limit_uses_the_address_a_trusted_proxy_appended(app_factory: AppFa
 
     def get(real_client: str) -> int:
         # The left entry is client-controlled; the right one is what the proxy saw.
-        return client.get(
-            "/items/1", headers={"X-Forwarded-For": f"1.1.1.1, {real_client}"}
-        ).status_code
+        response = client.get("/items/1", headers={"X-Forwarded-For": f"1.1.1.1, {real_client}"})
+        return int(response.status_code)
 
     assert get("203.0.113.1") == 200
     assert get("203.0.113.1") == 429

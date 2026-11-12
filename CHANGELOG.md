@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Rate limiter no longer trusts `X-Forwarded-For` from any client. It keys on the peer address unless `APP_TRUSTED_PROXY_HOPS` is set, in which case it uses the entry a trusted proxy appended.
+- Rate limiter drops buckets of idle clients instead of keeping every key forever, and `Retry-After` is the real wait instead of the whole window.
+- 429 responses carry CORS headers, and CORS preflights no longer count against the limit.
+- `/healthz` and `/readyz` answer `HEAD`.
+- Sentry no longer attaches request bodies (`max_request_body_size="never"`).
+- The container user can create the default SQLite file, so `alembic upgrade head` works in the image.
+- The Dockerfile test checks the final stage, and the Alembic test checks that tables are created.
+- README middleware diagram, TEST_REPORT and QA no longer describe things that were not true.
+
 ## [0.1.0] - 2026-11-11
 
 ### Added

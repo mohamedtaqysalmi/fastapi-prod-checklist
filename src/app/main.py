@@ -39,9 +39,17 @@ def create_app(
     register_exception_handlers(app)
     app.include_router(health_router)
 
-    # Last added = outermost. Request-context and security headers must wrap the
-    # rate limiter so 429 responses still get a request ID and headers. In-flight
+    # Last added = outermost. CORS wraps the rate limiter so 429 responses carry CORS headers
+    # and preflights are answered before they count against the limit. Request-context and
+    # security headers wrap both, so every response gets a request ID and headers. In-flight
     # tracking wraps everything so shutdown can wait on open requests.
+    app.add_middleware(
+        RateLimitMiddleware,
+        requests=settings.rate_limit_requests,
+        window_seconds=settings.rate_limit_window_seconds,
+        enabled=settings.rate_limit_enabled,
+        trusted_proxy_hops=settings.trusted_proxy_hops,
+    )
     if settings.cors_allow_origins:
         app.add_middleware(
             CORSMiddleware,
@@ -51,12 +59,6 @@ def create_app(
             allow_headers=["Authorization", "Content-Type", REQUEST_ID_HEADER],
             expose_headers=[REQUEST_ID_HEADER],
         )
-    app.add_middleware(
-        RateLimitMiddleware,
-        requests=settings.rate_limit_requests,
-        window_seconds=settings.rate_limit_window_seconds,
-        enabled=settings.rate_limit_enabled,
-    )
     # Security headers must wrap request-context so 500s built there still get headers.
     app.add_middleware(RequestContextMiddleware)
     app.add_middleware(SecurityHeadersMiddleware, hsts=settings.environment != "local")

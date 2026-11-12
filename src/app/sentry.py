@@ -45,6 +45,8 @@ def init_sentry(settings: Settings) -> bool:
         "environment": settings.environment,
         "traces_sample_rate": settings.sentry_traces_sample_rate,
         "send_default_pii": False,
+        # The SDK captures request bodies by default, independent of send_default_pii.
+        "max_request_body_size": "never",
         "integrations": [
             StarletteIntegration(transaction_style="endpoint"),
             FastApiIntegration(transaction_style="endpoint"),

@@ -29,6 +29,9 @@ class Settings(BaseSettings):
     rate_limit_enabled: bool = True
     rate_limit_requests: int = Field(default=60, ge=1)
     rate_limit_window_seconds: float = Field(default=60.0, gt=0)
+    # Number of reverse proxies in front of the app that append to X-Forwarded-For. At 0 the
+    # header is ignored, because any client can send it and dodge the limiter.
+    trusted_proxy_hops: int = Field(default=0, ge=0, le=10)
 
     # Empty DSN means Sentry stays off. Never required for boot.
     sentry_dsn: str = ""

@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="fastapi-prod-checklist: production readiness enforced by tests">
-  <rect width="1200" height="630" fill="#131210"/>
-  <rect x="72" y="72" width="12" height="150" fill="#5fd1a5"/>
-  <text x="112" y="150" fill="#ece9e2" font-family="system-ui, Segoe UI, Arial, sans-serif" font-size="68" font-weight="700">fastapi-prod-checklist</text>
-  <text x="112" y="214" fill="#a8a399" font-family="system-ui, Segoe UI, Arial, sans-serif" font-size="34">Production readiness enforced by tests</text>
-  <text x="72" y="540" fill="#5fd1a5" font-family="ui-monospace, Consolas, monospace" font-size="28">tests/test_production_readiness.py</text>
+  <rect width="1200" height="630" fill="#ffffff"/>
+  <text x="72" y="190" fill="#202122" font-family="Georgia, Times New Roman, serif" font-size="72">fastapi-prod-checklist</text>
+  <rect x="72" y="214" width="1056" height="2" fill="#a2a9b1"/>
+  <text x="72" y="290" fill="#54595d" font-family="Georgia, Times New Roman, serif" font-size="36">Production readiness enforced by tests</text>
+  <text x="72" y="540" fill="#0645ad" font-family="Consolas, Menlo, monospace" font-size="28">tests/test_production_readiness.py</text>
 </svg>

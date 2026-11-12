@@ -4,7 +4,7 @@ The template exposes health probes and a shared error body. Application routes a
 
 ## `GET /healthz`
 
-Liveness. Does not run readiness checks.
+Liveness. Does not run readiness checks. `HEAD` is accepted too.
 
 ```json
 {"status": "ok"}
@@ -12,7 +12,7 @@ Liveness. Does not run readiness checks.
 
 ## `GET /readyz`
 
-Runs every registered readiness check with `APP_READINESS_TIMEOUT_SECONDS`.
+Runs every registered readiness check with `APP_READINESS_TIMEOUT_SECONDS`. `HEAD` is accepted too.
 
 Success:
 
@@ -50,5 +50,5 @@ All HTTP errors, validation failures and unhandled exceptions use:
 | Header | When |
 | --- | --- |
 | `X-Request-ID` | Every response, including CORS preflight |
-| `Retry-After` | `429` from the rate limiter |
+| `Retry-After` | `429` from the rate limiter, in seconds until a slot frees up |
 | Security headers | Every response (`X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Content-Security-Policy`; `Strict-Transport-Security` when not `local`) |

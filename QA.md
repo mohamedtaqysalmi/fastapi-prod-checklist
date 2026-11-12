@@ -34,7 +34,7 @@ docker compose up --build   # optional smoke
 | Trip rate limit (`APP_RATE_LIMIT_REQUESTS=2`) | Third request `429`; `/healthz` still `200` | |
 | `alembic upgrade head` | Completes; SQLite file created | |
 | `docker compose up --build` | Container healthy; process not root (`docker compose exec api id`) | |
-| Open Pages checklist | Expand/collapse, filter, theme toggle, local progress persist | |
+| Open Pages checklist | Expand/collapse, filter, local progress persist | |
 | Keyboard-only through checklist | Focus visible; checkboxes operable | |
 | Mobile width 360px | Hero and checklist usable, no horizontal page scroll | |
 
@@ -43,9 +43,10 @@ docker compose up --build   # optional smoke
 - Unhandled 500 responses miss CORS headers.
 - In-process rate limiter only.
 - Key-name log redaction only.
+- Behind a reverse proxy the rate limiter needs `APP_TRUSTED_PROXY_HOPS`; at the default every client shares one bucket.
 
 ## Demo assets for you to record
 
 1. Terminal: boot without `APP_ENVIRONMENT`, then with `.env`, hit `/healthz` and a 429.
-2. Browser: expand three checklist items and toggle dark mode (Pages URL).
+2. Browser: expand three checklist items on the Pages URL.
 3. Optional: `docker compose exec api id` showing uid 10001.

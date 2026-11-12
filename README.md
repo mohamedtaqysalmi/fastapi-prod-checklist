@@ -69,6 +69,7 @@ Validation errors add a `details` list with `loc`, `msg` and `type` for each pro
 | `APP_RATE_LIMIT_ENABLED` | no | `true` | Fixed window, in-process |
 | `APP_RATE_LIMIT_REQUESTS` | no | `60` | |
 | `APP_RATE_LIMIT_WINDOW_SECONDS` | no | `60` | |
+| `APP_TRUSTED_PROXY_HOPS` | no | `0` | Reverse proxies that append to `X-Forwarded-For`. `0` ignores the header; otherwise the limiter keys on the entry counted from the right |
 | `APP_SENTRY_DSN` | no | empty | Empty keeps Sentry off |
 | `APP_SENTRY_TRACES_SAMPLE_RATE` | no | `0` | |
 | `APP_DATABASE_URL` | no | empty | Async SQLAlchemy URL; empty skips engine creation |
@@ -79,11 +80,12 @@ Validation errors add a `details` list with `loc`, `msg` and `type` for each pro
 
 ```mermaid
 flowchart LR
-  Client --> RateLimit
-  RateLimit --> SecurityHeaders
+  Client --> InFlight[in-flight tracker]
+  InFlight --> SecurityHeaders
   SecurityHeaders --> RequestContext
   RequestContext --> CORS
-  CORS --> Routes
+  CORS --> RateLimit
+  RateLimit --> Routes
   Routes --> Health["/healthz /readyz"]
   Routes --> Errors[shared error body]
   Lifespan --> Sentry[Sentry opt-in]
@@ -116,6 +118,7 @@ pytest
 - The interactive API docs are switched off, because the strict Content-Security-Policy would
   block them.
 - Rate limiting is in-process only. Multiple workers need a shared store.
+- Behind a reverse proxy, set `APP_TRUSTED_PROXY_HOPS`. At the default of `0` every client behind the proxy shares one rate-limit bucket.
 - The Dockerfile healthcheck hits `/healthz` over HTTP on localhost; it does not prove readiness.
 
 ## Security notes

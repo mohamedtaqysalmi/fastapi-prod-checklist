@@ -30,6 +30,8 @@ RUN groupadd --system --gid 10001 app \
     && useradd --system --uid 10001 --gid app --home /app --shell /usr/sbin/nologin app
 
 WORKDIR /app
+# Alembic's default SQLite file is ./app.db; the non-root user needs to be able to create it.
+RUN chown app:app /app
 
 COPY --from=builder /opt/venv /opt/venv
 COPY alembic.ini ./

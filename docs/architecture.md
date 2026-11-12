@@ -12,7 +12,7 @@ Short ADRs for the choices that shape this template.
 
 ## ADR 2 — In-process rate limiting by default
 
-**Decision:** Fixed-window limiter in middleware, keyed by `X-Forwarded-For` or peer IP. `/healthz` and `/readyz` are exempt.
+**Decision:** Fixed-window limiter in middleware, keyed by the peer IP. `X-Forwarded-For` is ignored unless `APP_TRUSTED_PROXY_HOPS` says how many proxies to trust, because any client can send that header. `/healthz` and `/readyz` are exempt.
 
 **Why:** A single-process template needs a guard that works with zero infrastructure.
 

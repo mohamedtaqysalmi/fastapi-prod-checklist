@@ -13,7 +13,7 @@ ReadinessCheck = Callable[[], Awaitable[None]]
 router = APIRouter(tags=["health"])
 
 
-@router.get("/healthz")
+@router.api_route("/healthz", methods=["GET", "HEAD"])
 async def liveness() -> dict[str, str]:
     # Liveness must not touch dependencies: a database outage should not get the pod restarted.
     return {"status": "ok"}
@@ -28,7 +28,7 @@ async def _run_check(name: str, check: ReadinessCheck, timeout: float) -> bool:
     return True
 
 
-@router.get("/readyz")
+@router.api_route("/readyz", methods=["GET", "HEAD"])
 async def readiness(request: Request) -> JSONResponse:
     checks: Mapping[str, ReadinessCheck] = request.app.state.readiness_checks
     timeout: float = request.app.state.settings.readiness_timeout_seconds

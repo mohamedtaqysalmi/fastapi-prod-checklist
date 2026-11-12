@@ -194,6 +194,57 @@ def test_rate_limiting_is_enabled_by_default() -> None:
     assert settings.rate_limit_window_seconds > 0
 
 
+def test_rate_limit_ignores_spoofed_forwarded_for_by_default(app_factory: AppFactory) -> None:
+    client = TestClient(
+        app_factory(rate_limit_enabled=True, rate_limit_requests=2, rate_limit_window_seconds=60),
+        raise_server_exceptions=False,
+    )
+    statuses = [
+        client.get("/items/1", headers={"X-Forwarded-For": f"10.0.0.{i}"}).status_code
+        for i in range(4)
+    ]
+    assert statuses == [200, 200, 429, 429]
+
+
+def test_rate_limit_uses_the_address_a_trusted_proxy_appended(app_factory: AppFactory) -> None:
+    client = TestClient(
+        app_factory(rate_limit_enabled=True, rate_limit_requests=1, trusted_proxy_hops=1),
+        raise_server_exceptions=False,
+    )
+
+    def get(real_client: str) -> int:
+        # The left entry is client-controlled; the right one is what the proxy saw.
+        return client.get(
+            "/items/1", headers={"X-Forwarded-For": f"1.1.1.1, {real_client}"}
+        ).status_code
+
+    assert get("203.0.113.1") == 200
+    assert get("203.0.113.1") == 429
+    assert get("203.0.113.2") == 200
+
+
+def test_rate_limited_responses_still_carry_cors_headers(app_factory: AppFactory) -> None:
+    client = TestClient(
+        app_factory(
+            rate_limit_enabled=True,
+            rate_limit_requests=1,
+            cors_allow_origins=["https://app.example.com"],
+        ),
+        raise_server_exceptions=False,
+    )
+    headers = {"Origin": "https://app.example.com"}
+    assert client.get("/items/1", headers=headers).status_code == 200
+    limited = client.get("/items/1", headers=headers)
+    assert limited.status_code == 429
+    assert limited.headers["access-control-allow-origin"] == "https://app.example.com"
+
+
+@pytest.mark.parametrize("path", ["/healthz", "/readyz"])
+def test_probes_answer_head_requests(client: TestClient, path: str) -> None:
+    # Some load balancers and uptime monitors probe with HEAD.
+    assert client.head(path).status_code == 200
+
+
 def test_sentry_stays_off_without_a_dsn(app_factory: AppFactory) -> None:
     from app.sentry import init_sentry, sentry_is_initialized
 
@@ -242,6 +293,7 @@ def test_sentry_hook_initializes_when_dsn_is_set(monkeypatch: pytest.MonkeyPatch
     assert sentry.sentry_is_initialized() is True
     assert calls and calls[0]["dsn"] == "https://public@example.com/1"
     assert calls[0]["send_default_pii"] is False
+    assert calls[0]["max_request_body_size"] == "never"
 
 
 def test_graceful_shutdown_disposes_the_database_engine(
@@ -279,15 +331,33 @@ def test_dockerfile_is_multistage_and_runs_as_non_root() -> None:
     from pathlib import Path
 
     dockerfile = (Path(__file__).resolve().parents[1] / "Dockerfile").read_text(encoding="utf-8")
-    from_lines = [
-        line.strip() for line in dockerfile.splitlines() if line.strip().upper().startswith("FROM ")
-    ]
-    assert len(from_lines) >= 2, "Dockerfile must be multi-stage"
+    lines = [line.strip() for line in dockerfile.splitlines()]
+    from_indexes = [i for i, line in enumerate(lines) if line.upper().startswith("FROM ")]
+    assert len(from_indexes) >= 2, "Dockerfile must be multi-stage"
 
-    user_lines = [
-        line.strip() for line in dockerfile.splitlines() if line.strip().upper().startswith("USER ")
-    ]
-    assert user_lines, "Dockerfile must set USER"
-    last_user = user_lines[-1].split(None, 1)[1]
-    assert last_user not in {"root", "0", "0:0"}, "final stage must not run as root"
-    assert "10001" in last_user or last_user == "app"
+    # Only the last stage ends up in the image, so a USER in an earlier stage proves nothing.
+    final_stage = lines[from_indexes[-1] :]
+    user_lines = [line for line in final_stage if line.upper().startswith("USER ")]
+    assert user_lines, "the final stage must set USER"
+    last_user = user_lines[-1].split(None, 1)[1].split(":")[0]
+    assert last_user not in {"root", "0"}, "final stage must not run as root"
+    assert last_user in {"10001", "app"}
+
+
+def test_alembic_upgrade_creates_the_schema(tmp_path: Path) -> None:
+    import sqlite3
+
+    from alembic.command import upgrade
+    from alembic.config import Config
+
+    root = Path(__file__).resolve().parents[1]
+    db_file = tmp_path / "schema.db"
+    cfg = Config(str(root / "alembic.ini"))
+    cfg.set_main_option("sqlalchemy.url", f"sqlite:///{db_file.as_posix()}")
+    upgrade(cfg, "head")
+
+    with sqlite3.connect(db_file) as conn:
+        tables = {row[0] for row in conn.execute("SELECT name FROM sqlite_master")}
+        (version,) = conn.execute("SELECT version_num FROM alembic_version").fetchone()
+    assert {"alembic_version", "health_probe"} <= tables
+    assert version == "20261111_0001"
